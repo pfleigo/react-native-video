@@ -19,7 +19,6 @@ PODS:
     - DoubleConversion
     - glog
   - glog (0.3.5)
-  - PromisesObjC
   - PromisesSwift (2.0.0):
     - PromisesObjC (2.0.0)
   - RCTRequired (0.63.4)
