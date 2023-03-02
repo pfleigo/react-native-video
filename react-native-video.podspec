@@ -18,6 +18,7 @@ Pod::Spec.new do |s|
   s.subspec "Video" do |ss|
     ss.source_files  = "ios/Video/**/*.{h,m,swift}"
     ss.dependency "PromisesSwift"
+    ss.dependency "PromisesObjC", "~> 2.2.0"
   end
 
   s.subspec "VideoCaching" do |ss|
