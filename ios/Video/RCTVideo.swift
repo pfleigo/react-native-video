@@ -14,6 +14,7 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
     private var _playerLayer:AVPlayerLayer?
 
     private var _playerViewController:RCTVideoPlayerViewController?
+    private var _playerDelegate:RCTPlayerDelegate?
     private var _videoURL:NSURL?
 
     /* DRM */
@@ -167,11 +168,6 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
     }
 
     @objc func applicationDidEnterBackground(notification:NSNotification!) {
-        if _playInBackground {
-            // Needed to play sound in background. See https://developer.apple.com/library/ios/qa/qa1668/_index.html
-            _playerLayer?.player = nil
-            _playerViewController?.player = nil
-        }
     }
 
     @objc func applicationWillEnterForeground(notification:NSNotification!) {
@@ -733,6 +729,10 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
             {
                 self.removePlayerLayer()
                 self.usePlayerViewController()
+                if (_playerViewController !== nil) {
+                    _playerDelegate = RCTPlayerDelegate(self.onPictureInPictureStatusChanged)
+                    _playerViewController!.delegate = _playerDelegate
+                }
             }
             else
             {
@@ -1108,7 +1108,6 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
         onVideoEnd?(["target": reactTag as Any])
 
         if notification.object as? AVPlayerItem == _player?.currentItem {
-            _imaAdsManager.getAdsLoader()?.contentComplete()
         }
 
         if _repeat {
