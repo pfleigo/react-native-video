@@ -77,7 +77,7 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
     private let _videoCache:RCTVideoCachingHandler = RCTVideoCachingHandler()
 #endif
 
-    private let _pip:RCTPictureInPicture = RCTPictureInPicture(self.onPictureInPictureStatusChanged, self.onRestoreUserInterfaceForPictureInPictureStop)
+    private var _pip:RCTPictureInPicture?
 
     // Events
     @objc var onVideoLoadStart: RCTDirectEventBlock?
@@ -145,7 +145,7 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
     }
 
     required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
+        super.init(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
 
         _imaAdsManager = RCTIMAAdsManager(video: self)
     }
@@ -389,12 +389,15 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
 
     @objc
     func setPictureInPicture(_ pictureInPicture:Bool) {
-        _pip.setPictureInPicture(pictureInPicture)
+        if (_pip == nil) {
+            _pip = RCTPictureInPicture(self.onPictureInPictureStatusChanged, self.onRestoreUserInterfaceForPictureInPictureStop)
+        }
+        _pip!.setPictureInPicture(pictureInPicture)
     }
 
     @objc
     func setRestoreUserInterfaceForPIPStopCompletionHandler(_ restore:Bool) {
-        _pip.setRestoreUserInterfaceForPIPStopCompletionHandler(restore)
+        _pip!.setRestoreUserInterfaceForPIPStopCompletionHandler(restore)
     }
 
     @objc
@@ -708,7 +711,7 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
                 self.layer.addSublayer(_playerLayer)
             }
             self.layer.needsDisplayOnBoundsChange = true
-            _pip.setupPipController(_playerLayer)
+            _pip!.setupPipController(_playerLayer)
         }
     }
 

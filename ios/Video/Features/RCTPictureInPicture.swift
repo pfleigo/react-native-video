@@ -11,7 +11,7 @@ class RCTPictureInPicture: NSObject, AVPictureInPictureControllerDelegate {
     private var _pipController:AVPictureInPictureController?
     private var _isActive:Bool = false
     
-    init(_ onPictureInPictureStatusChanged: @escaping RCTDirectEventBlock, _ onRestoreUserInterfaceForPictureInPictureStop: @escaping RCTDirectEventBlock) {
+    init(_ onPictureInPictureStatusChanged: RCTDirectEventBlock?, _ onRestoreUserInterfaceForPictureInPictureStop: RCTDirectEventBlock?) {
         _onPictureInPictureStatusChanged = onPictureInPictureStatusChanged
         _onRestoreUserInterfaceForPictureInPictureStop = onRestoreUserInterfaceForPictureInPictureStop
     }
