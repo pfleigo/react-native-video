@@ -4,7 +4,6 @@ import MediaAccessibility
 import React
 import Foundation
 
-#if TARGET_OS_IOS
 class RCTPictureInPicture: NSObject, AVPictureInPictureControllerDelegate {
     private var _onPictureInPictureStatusChanged: RCTDirectEventBlock?
     private var _onRestoreUserInterfaceForPictureInPictureStop: RCTDirectEventBlock?
@@ -72,4 +71,3 @@ class RCTPictureInPicture: NSObject, AVPictureInPictureControllerDelegate {
         }
     }
 }
-#endif
