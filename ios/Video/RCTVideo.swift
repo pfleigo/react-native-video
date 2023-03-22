@@ -719,6 +719,12 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
     func setControls(_ controls:Bool) {
         if _controls != controls || ((_playerLayer == nil) && (_playerViewController == nil))
         {
+            if (AVPictureInPictureController.isPictureInPictureSupported()) {
+                print("PIP IS SUPPORTED")
+            } else {
+                print("PIP IS NOT SUPPORTED")
+            }
+            
             _controls = controls
             if _controls
             {
