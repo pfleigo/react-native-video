@@ -609,20 +609,43 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
 
     @objc
     func setFullscreen(_ fullscreen:Bool) {
-        if fullscreen && !_fullscreenPlayerPresented && _player != nil {
-            let selectorName: String = {
-                if #available(iOS 11.3, *) {
-                    return "_transitionToFullScreenAnimated:interactive:completionHandler:"
-                } else if #available(iOS 11, *) {
-                    return "_transitionToFullScreenAnimated:completionHandler:"
-                } else {
-                    return "_transitionToFullScreenViewControllerAnimated:completionHandler:"
-                }
-            }()
-            let selectorToForceFullScreenMode = NSSelectorFromString(selectorName)
+        // Ensure player view controller is not null
+            if _playerViewController == nil && _controls {
+                self.usePlayerViewController()
+            }
 
-            if self._playerViewController!.responds(to: selectorToForceFullScreenMode) {
-                self._playerViewController!.perform(selectorToForceFullScreenMode, with: true, with: nil)
+            // Set presentation style to fullscreen
+            _playerViewController?.modalPresentationStyle = .fullScreen
+
+            // Find the nearest view controller
+            var viewController:UIViewController! = self.firstAvailableUIViewController()
+            if (viewController == nil) {
+                let keyWindow:UIWindow! = UIApplication.shared.keyWindow
+                viewController = keyWindow.rootViewController
+                if viewController.children.count > 0
+                {
+                    viewController = viewController.children.last
+                }
+            }
+            if viewController != nil {
+                _presentingViewController = viewController
+                // Moved to RCTPlayerDelegate
+                // self.onVideoFullscreenPlayerWillPresent?(["target": reactTag as Any])
+
+                if let playerViewController = _playerViewController {
+                    if(_controls) {
+                        // prevents crash https://github.com/react-native-video/react-native-video/issues/3040
+                        self._playerViewController?.removeFromParent()
+                    }
+                    viewController.present(playerViewController, animated:true, completion:{
+                        self._playerViewController?.showsPlaybackControls = self._controls
+                        self._fullscreenPlayerPresented = fullscreen
+                        self._playerViewController?.autorotate = self._fullscreenAutorotate
+
+                        self.onVideoFullscreenPlayerDidPresent?(["target": self.reactTag])
+
+                    })
+                }
             }
         } else if !fullscreen && _fullscreenPlayerPresented, let _playerViewController = _playerViewController {
             self.videoPlayerViewControllerWillDismiss(playerViewController: _playerViewController)
